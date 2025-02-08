@@ -6,6 +6,7 @@ const reportSchema = new mongoose.Schema({
     ownership: String,
     ownership: String,
     state: String,
+    country: String,
     city: String,
     address: String,
     email: String,

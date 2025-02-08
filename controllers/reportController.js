@@ -4,13 +4,13 @@ import reportModel from '../models/reportSchama.js';
 const saveData = async (req, res) => {
     try {
         const {
-            organisation_name, facility_type, ownership, state, city,
+            organisation_name, facility_type, ownership, state, city, country,
             address, email, phone, google_maps_link, is_24_hours,
             opening_time, closing_time
         } = req.body;
 
         // Check for required fields
-        if (!organisation_name || !facility_type || !ownership || !state || !city || !address || !email || !phone) {
+        if (!organisation_name || !facility_type || !ownership || !state || !country || !city || !address || !email || !phone) {
             return res.status(400).json({ error: "Required fields are missing" });
         }
 
