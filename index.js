@@ -17,6 +17,10 @@ app.use(bodyParser.json());
 
 app.use('/api/', fileRoutes);
 
+app.get('/' , (req , res) => {
+    res.send('test')
+})
+
 
 app.listen(port , () => {
     console.log(`Server is up and running at http://localhost:${port}`);
