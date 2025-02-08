@@ -43,5 +43,57 @@ const getReports = async (req, res) => {
     }
 };
 
+const editData = async (req , res) => {
+    try {
+        const { id } = req.headers;
 
-export { saveData, getReports };
+        if (!id) {
+            return res.status(400).json({ error: 'id is required in the headers' });
+        }
+
+        const {
+            organisation_name, facility_type, ownership, state, city, country,
+            address, email, phone, google_maps_link, is_24_hours, facility_a_e
+        } = req.body;
+        await reportModel.findByIdAndUpdate(id, {
+            organisation_name: organisation_name,
+            facility_type: facility_type,
+            ownership: ownership,
+            state: state,
+            city: city,
+            country: country,
+            address: address,
+            email: email,
+            phone: phone,
+            google_maps_link: google_maps_link,
+            is_24_hours: is_24_hours,
+            facility_a_e: facility_a_e
+        });
+        return res.status(200).json({ message: "updated successfully" });
+    } catch (error) {
+        console.log(error);
+    }
+} 
+
+const deleteData = async (req, res) => {
+    try {
+        const { id } = req.headers;
+
+        if (!id) {
+            return res.status(400).json({ error: 'id is required in the headers' });
+        }
+
+        const deletedData = await reportModel.findByIdAndDelete(id);
+
+        if (!deletedData) {
+            return res.status(404).json({ error: 'Data not found' });
+        }
+
+        return res.status(200).json({ message: 'Data deleted successfully' });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: 'Something went wrong' });
+    }
+};
+
+export { saveData, getReports, editData, deleteData };
