@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use('/api/', fileRoutes);
 
 app.get('/' , (req , res) => {
-    res.send('test')
+    res.send('test code')
 })
 
 
