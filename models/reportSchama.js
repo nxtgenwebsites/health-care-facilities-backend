@@ -13,7 +13,7 @@ const reportSchema = new mongoose.Schema({
     google_maps_link: String,
     is_24_hours: String,
     facility_a_e: String,
-});
+}, { timestamps: true });
 
 const DataModel = mongoose.model('data', reportSchema);
 
