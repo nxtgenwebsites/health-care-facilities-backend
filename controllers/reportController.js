@@ -1,33 +1,4 @@
-import xlsx from 'xlsx';
-import csv from 'csv-parser';
-import fs from 'fs';
-import path from 'path';
 import reportModel from '../models/reportSchama.js';
-
-// Process Uploaded File
-const processFile = (req, res) => {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-
-    const filePath = req.file.path;
-    const fileType = path.extname(filePath).substring(1);
-    let data = [];
-
-    if (fileType === "csv" || fileType === "txt") {
-        fs.createReadStream(filePath)
-            .pipe(csv())
-            .on("data", (row) => {
-                data.push(Object.values(row));
-            })
-            .on("end", () => {
-                res.json({ dropdownData: data.slice(0, 5) });
-            });
-    } else {
-        const workbook = xlsx.readFile(filePath);
-        const sheetName = workbook.SheetNames[0];
-        const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
-        res.json({ dropdownData: sheetData.slice(0, 5) });
-    }
-};
 
 // Save Data to MongoDB
 const saveData = async (req, res) => {
@@ -78,4 +49,4 @@ const getReports = async (req, res) => {
 };
 
 
-export { processFile, saveData, getReports };
+export { saveData, getReports };
