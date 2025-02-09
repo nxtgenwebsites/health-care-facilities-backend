@@ -96,4 +96,23 @@ const deleteData = async (req, res) => {
     }
 };
 
-export { saveData, getReports, editData, deleteData };
+const getReport = async (req, res) => {
+    try {
+        const { id } = req.headers;
+        if (!id) {
+            return res.status(400).json({ message: "Id not provided in headers" });
+        }
+
+        const data = await reportModel.findById(id);
+
+        if (!data) {
+            return res.status(404).json({ message: "data not found" });
+        }
+
+       return res.status(200).json({ message: "Success", data: data });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Something went wrong' });
+    }
+};
+export { saveData, getReports, editData, deleteData, getReport };
