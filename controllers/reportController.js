@@ -1,4 +1,50 @@
 import reportModel from '../models/reportSchama.js';
+import xlsx from 'xlsx';
+import csv from 'csv-parser';
+import fs from 'fs';
+import path from 'path';
+
+// Process Uploaded File
+const uploadFile = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: "No file uploaded" });
+        }
+
+        const filePath = req.file.path;
+        const fileType = path.extname(filePath).substring(1);
+        let data = [];
+
+        if (fileType === "csv" || fileType === "txt") {
+            // For CSV or TXT files
+            fs.createReadStream(filePath)
+                .pipe(csv())
+                .on("data", (row) => {
+                    data.push(Object.values(row));
+                })
+                .on("end", () => {
+                    res.json({ dropdownData: data.slice(0, 5) });
+                })
+                .on("error", (error) => {
+                    console.error("Error reading CSV/TXT file:", error);
+                    res.status(500).json({ error: "Error reading the file" });
+                });
+        } else if (fileType === "xlsx") {
+            // For Excel files (xlsx)
+            const workbook = xlsx.readFile(filePath);
+            const sheetName = workbook.SheetNames[0];
+            const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+            res.json({ dropdownData: sheetData.slice(0, 5) });
+        } else {
+            res.status(400).json({ error: "Invalid file type" });
+        }
+
+    } catch (error) {
+        console.error("Error in file processing:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 
 // Save Data to MongoDB
 const saveData = async (req, res) => {
@@ -115,4 +161,4 @@ const getReport = async (req, res) => {
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
-export { saveData, getReports, editData, deleteData, getReport };
+export { saveData, getReports, editData, deleteData, getReport, uploadFile };
