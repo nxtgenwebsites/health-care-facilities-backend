@@ -5,14 +5,9 @@ import { deleteData, editData, getReport, getReports, saveData, uploadFile } fro
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-    destination: './uploads/',
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-    },
-});
 
-const upload = multer({ storage });
+// Multer Storage Setup
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Routes
 router.post('/upload', upload.single('file'), uploadFile);

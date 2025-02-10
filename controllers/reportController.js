@@ -1,23 +1,22 @@
 import reportModel from '../models/reportSchama.js';
 import xlsx from 'xlsx';
 import csv from 'csv-parser';
-import fs from 'fs';
-import path from 'path';
 
 // Process Uploaded File
 const uploadFile = async (req, res) => {
-    try {
+  try {
         if (!req.file) {
             return res.status(400).json({ error: "No file uploaded" });
         }
 
-        const filePath = req.file.path;
-        const fileType = path.extname(filePath).substring(1);
+        const fileType = req.file.mimetype;
         let data = [];
 
-        if (fileType === "csv" || fileType === "txt") {
-            // For CSV or TXT files
-            fs.createReadStream(filePath)
+        if (fileType === "text/csv" || fileType === "text/plain") {
+            // For CSV or TXT files, process directly from buffer
+            const stream = streamifier.createReadStream(req.file.buffer);
+
+            stream
                 .pipe(csv())
                 .on("data", (row) => {
                     data.push(Object.values(row));
@@ -29,16 +28,18 @@ const uploadFile = async (req, res) => {
                     console.error("Error reading CSV/TXT file:", error);
                     res.status(500).json({ error: "Error reading the file" });
                 });
-        } else if (fileType === "xlsx") {
-            // For Excel files (xlsx)
-            const workbook = xlsx.readFile(filePath);
+
+        } else if (fileType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+            // ✅ For Excel files (xlsx), process directly from buffer
+            const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
             const sheetName = workbook.SheetNames[0];
             const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+
             res.json({ dropdownData: sheetData.slice(0, 5) });
+
         } else {
             res.status(400).json({ error: "Invalid file type" });
         }
-
     } catch (error) {
         console.error("Error in file processing:", error);
         res.status(500).json({ error: "Internal server error" });
