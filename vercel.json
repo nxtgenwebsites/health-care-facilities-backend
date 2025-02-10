@@ -1,16 +1,15 @@
 {
     "version": 2,
-    "functions": {
-        "api/**/*.js": {
-            "runtime": "nodejs18.x",
-            "memory": 1024,
-            "maxDuration": 10
-        }
-    },
-    "routes": [
+    "builds": [
         {
-            "src": "/(.*)",
-            "dest": "/api/index.js"
+            "src": "./index.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/"
         }
     ]
 }
