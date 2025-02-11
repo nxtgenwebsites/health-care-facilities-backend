@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import { deleteData, editData, getReport, getReports, saveData, uploadFile } from '../controllers/reportController.js';
+import { deleteData, editData, getReport, getReports, saveData, savefileData, uploadFile } from '../controllers/reportController.js';
 
 const router = express.Router();
 
@@ -12,6 +12,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 // Routes
 router.post('/upload', upload.single('file'), uploadFile);
 router.post('/save', saveData);
+router.post('/save-file', savefileData);
 router.get('/get-reports', getReports);
 router.put('/edit', editData);
 router.delete('/delete', deleteData);

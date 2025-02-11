@@ -47,6 +47,62 @@ const uploadFile = async (req, res) => {
 };
 
 
+// Save All Data with to MongoDB
+const savefileData = async (req, res) => {
+        try {
+            // Assuming data comes as an array from the frontend (req.body)
+            const data = req.body;  // Accessing the data sent in the request body
+
+            // Check if the data is an array
+            if (!Array.isArray(data)) {
+                return res.status(400).json({ success: false, message: 'Invalid data format. Expected an array.' });
+            }
+
+            // Map through each entry in the data array and save it to the database
+            for (const item of data) {
+                const {
+                    organisation_name,
+                    facility_type,
+                    ownership,
+                    state,
+                    city,
+                    country,
+                    address,
+                    email_address,
+                    phone_number,
+                    google_maps_link,
+                    is_24_hours,
+                    is_A_E
+                } = item;
+
+                // Create a new document based on the data from the frontend
+                const newData = new reportModel({
+                    organisation_name,
+                    facility_type,
+                    ownership,
+                    state,
+                    city,
+                    country,
+                    address,
+                    email: email_address,
+                    phone: phone_number,
+                    google_maps_link,
+                    is_24_hours,
+                    facility_a_e: is_A_E
+                });
+
+                // Save each entry to the database
+                await newData.save();
+            }
+
+            // Send success response after saving all data
+            res.status(200).json({ success: true, message: "Data saved successfully" });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Server Error", message: error.message });
+        }
+    };
+
 // Save Data to MongoDB
 const saveData = async (req, res) => {
     try {
@@ -162,4 +218,4 @@ const getReport = async (req, res) => {
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
-export { saveData, getReports, editData, deleteData, getReport, uploadFile };
+export { saveData, getReports, editData, deleteData, getReport, uploadFile, savefileData };
