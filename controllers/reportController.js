@@ -109,32 +109,50 @@ const savefileData = async (req, res) => {
 const saveData = async (req, res) => {
     try {
         const {
-            organisation_name, facility_type, ownership, state, city, country,
-            address, zip_code, email, phone, google_maps_link, is_24_hours, facility_a_e
+            organisation_name,
+            facility_type,
+            ownership,
+            state,
+            email,
+            phone,
+            country,
+            city,
+            address,
+            google_maps_link,
+            is_24_hours,
+            zip_code,
+            facility_a_e,
+            time_slots // Expecting an array of objects like [{ day: "Sunday", start_time: "10:00 AM", end_time: "6:30 PM" }]
         } = req.body;
 
+        // If the facility is not 24 hours, ensure time_slots is provided
+        if (is_24_hours.toLowerCase() === "no" && (!Array.isArray(time_slots) || time_slots.length === 0)) {
+            return res.status(400).json({ message: "Time slots are required when is_24_hours is 'no'" });
+        }
 
         const newData = new reportModel({
             organisation_name,
             facility_type,
             ownership,
             state,
+            email,
+            phone,
+            country,
             city,
             address,
-            email,
-            zip_code,
-            phone,
             google_maps_link,
             is_24_hours,
+            zip_code,
             facility_a_e,
-            country
+            time_slots: is_24_hours.toLowerCase() === "no" ? time_slots : [] // Save time slots only if applicable
         });
 
         await newData.save();
-        res.status(200).json({ success: true, message: "Data saved successfully" });
+        res.status(201).json({ message: "Data saved successfully", data: newData });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Server Error", message: error.message });
+        console.error("Error saving data:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 

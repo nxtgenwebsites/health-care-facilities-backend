@@ -4,6 +4,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import connectDB from './config/db.js';
 import fileRoutes from './routes/report.js'
+import userRoutes from './routes/userRoutes.js';
 
 
 dotenv.config();
@@ -14,8 +15,10 @@ const port = process.env.PORT || 9000;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.use('/api/', fileRoutes);
+app.use('/api/', userRoutes);
 
 app.get('/' , (req , res) => {
     res.send('test code')

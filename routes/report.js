@@ -1,6 +1,5 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
 import { deleteData, editData, getReport, getReports, saveData, savefileData, uploadFile } from '../controllers/reportController.js';
 
 const router = express.Router();
