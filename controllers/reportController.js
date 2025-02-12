@@ -68,6 +68,7 @@ const savefileData = async (req, res) => {
                     city,
                     country,
                     address,
+                    zip_code,
                     email_address,
                     phone_number,
                     google_maps_link,
@@ -101,14 +102,14 @@ const savefileData = async (req, res) => {
             console.error(error);
             res.status(500).json({ error: "Server Error", message: error.message });
         }
-    };
+};
 
 // Save Data to MongoDB
 const saveData = async (req, res) => {
     try {
         const {
             organisation_name, facility_type, ownership, state, city, country,
-            address, email, phone, google_maps_link, is_24_hours, facility_a_e
+            address, zip_code, email, phone, google_maps_link, is_24_hours, facility_a_e
         } = req.body;
 
 
@@ -120,6 +121,7 @@ const saveData = async (req, res) => {
             city,
             address,
             email,
+            zip_code,
             phone,
             google_maps_link,
             is_24_hours,
@@ -218,4 +220,5 @@ const getReport = async (req, res) => {
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
+
 export { saveData, getReports, editData, deleteData, getReport, uploadFile, savefileData };
