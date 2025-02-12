@@ -85,6 +85,7 @@ const savefileData = async (req, res) => {
                     city,
                     country,
                     address,
+                    zip_code,
                     email: email_address,
                     phone: phone_number,
                     google_maps_link,
