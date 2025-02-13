@@ -99,7 +99,7 @@ const loginUser = async (req, res) => {
         }
 
         res.status(200).json({
-            message: "Login successful",
+            message: "Login successfully",
             user: {
                 id: user._id,
                 name: user.name,
@@ -112,7 +112,6 @@ const loginUser = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
-
 
  const sendLoginDetails = async (req, res) => {
     const { name, email, password } = req.body
