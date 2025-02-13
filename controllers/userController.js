@@ -1,37 +1,60 @@
 import userModel from "../models/userSchama.js";
+import bcrypt from 'bcrypt';
 
 const addUser = async (req, res) => {
     try {
-        const { name, last_name, password, role } = req.body;
+        const { name, last_name, email, password, role } = req.body;
 
-        if (!name || !last_name || !password || !role) {
+        if (!name || !last_name || !email || !password || !role) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
-        const newUser = new userModel({ name, last_name, password, role });
+        // Hash the password before saving
+        const saltRounds = 10; // Recommended value for security
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const newUser = new userModel({
+            name,
+            last_name,
+            email,
+            password: hashedPassword,
+            role
+        });
+
         await newUser.save();
 
         res.status(201).json({ message: "User created successfully", user: newUser });
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
+        console.log(error);
     }
+
 };
 
 
 const editUser = async (req, res) => {
     try {
         const { id } = req.headers;
-        const { name, last_name, password, role } = req.body;
-
-        const updatedUser = await userModel.findByIdAndUpdate(id, { name, last_name, password, role }, { new: true });
-
-        if (!updatedUser) {
+        const { name, last_name, password, role , email } = req.body;
+        const user = await userModel.findById(id);
+        if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
+
+        let updatedFields = { name, last_name, role  ,email};
+        
+        if (password) {
+            const saltRounds = 10;
+            updatedFields.password = await bcrypt.hash(password, saltRounds);
+        }
+
+        // Update user
+        const updatedUser = await userModel.findByIdAndUpdate(id, updatedFields, { new: true });
 
         res.status(200).json({ message: "User updated successfully", user: updatedUser });
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
+        console.log(error);
     }
 };
 
@@ -49,6 +72,7 @@ const editUser = async (req, res) => {
         res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
+        console.log(error);
     }
 };
 
@@ -66,6 +90,7 @@ const getUser = async (req, res) => {
         res.status(200).json({ user });
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
+        console.log(error);
     }
 };
 
@@ -76,7 +101,36 @@ const getAllUsers = async (req, res) => {
         res.status(200).json({ users });
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
+        console.log(error);
     }
 };
 
-export {addUser , editUser , deleteUser , getUser , getAllUsers};
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        if (user.password !== password) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        res.status(200).json({
+            message: "Login successful",
+            user: {
+                id: user._id,
+                name: user.name,
+                last_name: user.last_name,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export {addUser , editUser , deleteUser , getUser , getAllUsers , loginUser};
