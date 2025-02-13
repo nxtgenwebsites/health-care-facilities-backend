@@ -130,7 +130,7 @@ const loginUser = async (req, res) => {
         from: 'shahbazansari8199@gmail.com',
         to: `${email}`,
         subject: `Welcome to Health Monitor System`,
-        text: `Dear [First Name],
+        text: `Dear ${name},
 
 Welcome to the Health Monitor System!
 
