@@ -1,26 +1,14 @@
 import userModel from "../models/userSchama.js";
-import bcrypt from 'bcrypt';
 
 const addUser = async (req, res) => {
     try {
-        const { name, last_name, email, password, role } = req.body;
+        const { name, last_name, email , password, role } = req.body;
 
         if (!name || !last_name || !email || !password || !role) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
-        // Hash the password before saving
-        const saltRounds = 10; // Recommended value for security
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        const newUser = new userModel({
-            name,
-            last_name,
-            email,
-            password: hashedPassword,
-            role
-        });
-
+        const newUser = new userModel({ name, last_name, password, role  , email});
         await newUser.save();
 
         res.status(201).json({ message: "User created successfully", user: newUser });
@@ -28,28 +16,19 @@ const addUser = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
         console.log(error);
     }
-
 };
 
 
 const editUser = async (req, res) => {
     try {
         const { id } = req.headers;
-        const { name, last_name, password, role , email } = req.body;
-        const user = await userModel.findById(id);
-        if (!user) {
+        const { name, last_name, password, role } = req.body;
+
+        const updatedUser = await userModel.findByIdAndUpdate(id, { name, last_name, password, role }, { new: true });
+
+        if (!updatedUser) {
             return res.status(404).json({ error: "User not found" });
         }
-
-        let updatedFields = { name, last_name, role  ,email};
-        
-        if (password) {
-            const saltRounds = 10;
-            updatedFields.password = await bcrypt.hash(password, saltRounds);
-        }
-
-        // Update user
-        const updatedUser = await userModel.findByIdAndUpdate(id, updatedFields, { new: true });
 
         res.status(200).json({ message: "User updated successfully", user: updatedUser });
     } catch (error) {
