@@ -1,4 +1,5 @@
 import userModel from "../models/userSchama.js";
+import nodemailer from "nodemailer"
 
 const addUser = async (req, res) => {
     try {
