@@ -2,13 +2,13 @@ import userModel from "../models/userSchama.js";
 
 const addUser = async (req, res) => {
     try {
-        const { name, last_name, email , password, role } = req.body;
+        const { name, last_name, email, password, role } = req.body;
 
         if (!name || !last_name || !email || !password || !role) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
-        const newUser = new userModel({ name, last_name, password, role  , email});
+        const newUser = new userModel({ name, last_name, password, role, email });
         await newUser.save();
 
         res.status(201).json({ message: "User created successfully", user: newUser });
@@ -38,7 +38,7 @@ const editUser = async (req, res) => {
 };
 
 // Delete a user
- const deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => {
     try {
         const { id } = req.headers;
 
@@ -112,4 +112,44 @@ const loginUser = async (req, res) => {
     }
 };
 
-export {addUser , editUser , deleteUser , getUser , getAllUsers , loginUser};
+
+ const sendLoginDetails = async (req, res) => {
+    const { name, email, password } = req.body
+    const testAccount = await nodemailer.createTestAccount();
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: "shahbazansari8199@gmail.com",
+            pass: 'nyaj zfxg ktjr iztq'
+        },
+    })
+    const info = await transporter.sendMail({
+        from: 'shahbazansari8199@gmail.com',
+        to: `${email}`,
+        subject: `Welcome to Health Monitor System`,
+        text: `Dear [First Name],
+
+Welcome to the Health Monitor System!
+
+We are excited to have you onboard. Below are your login details to get started with your account:
+Login Link:     https://health-care-facilities.vercel.app/login.html
+Email Address: ${email}
+Password:         ${password}
+
+If you encounter any issues or have questions regarding your account, don’t hesitate to contact our support team at [support@nxtgenwebsites.com].
+
+We look forward to helping you monitor and manage your user role effectively.
+
+Best regards,  
+The Health Monitor Team`,
+    })
+
+    console.log("Message send:%s", info.messageId);
+    console.log(req.body.email);
+    res.send(info)
+}
+
+export { addUser, editUser, deleteUser, getUser, getAllUsers, loginUser , sendLoginDetails };
