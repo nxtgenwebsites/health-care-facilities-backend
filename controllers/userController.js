@@ -113,9 +113,9 @@ const deleteUser = async (req, res) => {
 const getUser = async (req, res) => {
     try {
         // Extract user ID from JWT (added by authenticateToken middleware)
-        const userId = req.user.id;
+        const {id} = req.headers;
 
-        const user = await userModel.findById(userId).select('-password'); // Exclude password
+        const user = await userModel.findById(id).select('-password'); // Exclude password
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
