@@ -1,7 +1,6 @@
 import express from 'express';
 import multer from 'multer';
 import { deleteData, editData, getReport, getReports, saveData, savefileData, uploadFile } from '../controllers/reportController.js';
-import { sendLoginDetails } from '../controllers/userController.js';
 
 const router = express.Router();
 
@@ -17,6 +16,5 @@ router.get('/get-reports', getReports);
 router.put('/edit', editData);
 router.delete('/delete', deleteData);
 router.get('/get-report', getReport);
-router.post('/send-details', sendLoginDetails);
 
 export default router;
