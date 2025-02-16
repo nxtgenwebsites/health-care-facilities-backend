@@ -14,8 +14,6 @@ connectDB();
 const corsOptions = {
     origin: 'https://health-care-facilities.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'user-id', 'token'],
-    credentials: true, 
     optionsSuccessStatus: 200
 };
 
