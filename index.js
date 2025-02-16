@@ -10,10 +10,19 @@ import userRoutes from './routes/userRoutes.js';
 dotenv.config();
 connectDB();
 
+// CORS configuration
+const corsOptions = {
+    origin: 'https://health-care-facilities.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'user-id', 'token'],
+    credentials: true, 
+    optionsSuccessStatus: 200
+};
+
 const app = express();
 const port = process.env.PORT || 9000;
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 
