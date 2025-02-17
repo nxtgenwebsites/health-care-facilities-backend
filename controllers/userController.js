@@ -3,7 +3,6 @@ import nodemailer from "nodemailer"
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt';
 
-
 const addUser = async (req, res) => {
     try {
         const { name, last_name, email, password, role } = req.body;
@@ -57,7 +56,6 @@ const addUser = async (req, res) => {
     }
 };
 
-
 const editUser = async (req, res) => {
     try {
         const { id } = req.headers;
@@ -90,17 +88,25 @@ const editUser = async (req, res) => {
     }
 };
 
-
 // Delete a user
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.headers;
 
-        const deletedUser = await userModel.findByIdAndDelete(id);
+        // Find the user to delete
+        const userToDelete = await userModel.findById(id);
 
-        if (!deletedUser) {
+        if (!userToDelete) {
             return res.status(404).json({ error: "User not found" });
         }
+
+        // Prevent Super Admin from deleting an Admin
+        if (userToDelete.role === "super admin") {
+            return res.status(403).json({ error: "Super Admin cannot be deleted." });
+        }
+
+        // Proceed with deletion
+        await userModel.findByIdAndDelete(id);
 
         res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {
@@ -108,6 +114,7 @@ const deleteUser = async (req, res) => {
         console.log(error);
     }
 };
+
 
 // Get a single user
 const getUser = async (req, res) => {
@@ -141,7 +148,7 @@ const getAllUsers = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body; // Get role from request
 
         // Check if user exists
         const user = await userModel.findOne({ email });
@@ -153,6 +160,11 @@ const loginUser = async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({ message: "Wrong password." });
+        }
+
+        // Verify role
+        if (user.role !== role) {
+            return res.status(403).json({ message: "Incorrect role." });
         }
 
         // Generate JWT token
@@ -177,6 +189,7 @@ const loginUser = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
 
 const sendLoginDetails = async (req, res) => {
     const { name, email, password } = req.body
