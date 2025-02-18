@@ -192,7 +192,7 @@ const loginUser = async (req, res) => {
 
 
 const sendLoginDetails = async (req, res) => {
-    const { name, email, password } = req.body
+    const { name, email, password , role } = req.body
 
     const token = jwt.sign({ email }, 'healthcare', { expiresIn: '30d' });
 
@@ -218,9 +218,10 @@ const sendLoginDetails = async (req, res) => {
 Welcome to the Health Monitor System!
 
 We are excited to have you onboard. Below are your login details to get started with your account:
-Login Link:     ${loginLink}
+Login Link:    https://health-care-facilities.vercel.app/login.html
 Email Address: ${email}
 Password:         ${password}
+Role :    ${role}
 
 If you encounter any issues or have questions regarding your account, don’t hesitate to contact our support team at [support@nxtgenwebsites.com].
 
