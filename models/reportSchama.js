@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const timeSlotSchema = new mongoose.Schema({
-    day: { type: String, required: true },
+    day: { type: String, required: true, default: "all" },
     start_time: { type: String, required: true },
     end_time: { type: String, required: true }
 });
