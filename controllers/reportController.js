@@ -73,10 +73,11 @@ const savefileData = async (req, res) => {
                     phone_number,
                     google_maps_link,
                     is_24_hours,
-                    is_A_E
+                    is_A_E,
+                    time_slots,
                 } = item;
 
-                // Create a new document based on the data from the frontend
+                
                 const newData = new reportModel({
                     organisation_name,
                     facility_type,
@@ -90,6 +91,7 @@ const savefileData = async (req, res) => {
                     phone: phone_number,
                     google_maps_link,
                     is_24_hours,
+                    time_slots,
                     facility_a_e: is_A_E
                 });
 
