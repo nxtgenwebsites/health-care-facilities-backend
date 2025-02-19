@@ -74,6 +74,7 @@ const savefileData = async (req, res) => {
                     google_maps_link,
                     is_24_hours,
                     is_A_E,
+                    user,
                     time_slots,
                 } = item;
 
@@ -92,6 +93,7 @@ const savefileData = async (req, res) => {
                     google_maps_link,
                     is_24_hours,
                     time_slots,
+                    user,
                     facility_a_e: is_A_E
                 });
 
