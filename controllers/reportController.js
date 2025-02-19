@@ -124,6 +124,7 @@ const saveData = async (req, res) => {
             is_24_hours,
             zip_code,
             facility_a_e,
+            user,
             time_slots // Expecting an array of objects like [{ day: "Sunday", start_time: "10:00 AM", end_time: "6:30 PM" }]
         } = req.body;
 
@@ -146,6 +147,7 @@ const saveData = async (req, res) => {
             is_24_hours,
             zip_code,
             facility_a_e,
+            user,
             time_slots: is_24_hours.toLowerCase() === "no" ? time_slots : [] // Save time slots only if applicable
         });
 

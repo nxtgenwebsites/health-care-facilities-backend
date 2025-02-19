@@ -59,21 +59,29 @@ const addUser = async (req, res) => {
 const editUser = async (req, res) => {
     try {
         const { id } = req.headers;
+        const { password, name, last_name, role } = req.body;
 
-        const { password } = req.body;
+        // Prepare the fields to update
+        const updateFields = {};
 
-        if (!password) {
-            return res.status(400).json({ error: "New password is required" });
+        // Check for password and hash it if present
+        if (password) {
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            updateFields.password = hashedPassword;
         }
 
-        // Hash the new password
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        if (name) updateFields.name = name;
+        if (last_name) updateFields.last_name = last_name;
+        if (role) updateFields.role = role;
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ error: "At least one field (password, firstName, lastName, or role) must be provided" });
+        }
 
-        // Update the user password in the database
+        // Update the user in the database
         const updatedUser = await userModel.findByIdAndUpdate(
             id,
-            { password: hashedPassword },
+            updateFields,
             { new: true }
         );
 
@@ -81,9 +89,9 @@ const editUser = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        res.status(200).json({ message: "Password updated successfully" });
+        res.status(200).json({ message: "User updated successfully" });
     } catch (error) {
-        console.error("Error updating password:", error);
+        console.error("Error updating user:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 };

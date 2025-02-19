@@ -20,6 +20,7 @@ const reportSchema = new mongoose.Schema({
     is_24_hours: String,
     zip_code: String,
     facility_a_e: String,
+    user: String,
     time_slots: { type: [timeSlotSchema], default: [] } // Stores start and end times for each day
 }, { timestamps: true });
 
