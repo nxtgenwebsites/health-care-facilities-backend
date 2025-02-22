@@ -127,10 +127,10 @@ const deleteUser = async (req, res) => {
 // Get a single user
 const getUser = async (req, res) => {
     try {
-        // Extract user ID from JWT (added by authenticateToken middleware)
-        const {id} = req.headers;
 
-        const user = await userModel.findById(id).select('-password'); // Exclude password
+        const { id } = req.headers;
+
+        const user = await userModel.findById(id).select('-password');
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -160,22 +160,24 @@ const loginUser = async (req, res) => {
 
         // Check if user exists
         const user = await userModel.findOne({ email });
+
         if (!user) {
             return res.status(400).json({ message: "User not found." });
         }
 
-        // Compare hashed password
+        if (user.isBlocked) {
+            return res.status(403).json({ message: "Your account is banned by the admin." });
+        }
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({ message: "Wrong password." });
         }
 
-        // Verify role
         if (user.role !== role) {
             return res.status(403).json({ message: "Incorrect role." });
         }
 
-        // Generate JWT token
         const token = jwt.sign(
             { id: user._id, email: user.email, role: user.role },
             'healthcare',
@@ -199,8 +201,35 @@ const loginUser = async (req, res) => {
 };
 
 
+const blockUser = async (req, res) => {
+    try {
+        const { id } = req.headers;
+
+        if (!id) {
+            return res.status(400).json({ message: "User ID is required in headers" });
+        }
+
+        const user = await userModel.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.role === "super admin") {
+            return res.status(403).json({ message: "Cannot block a super admin" });
+        }
+
+        const updatedUser = await userModel.findByIdAndUpdate(id, { isBlocked: true }, { new: true });
+
+        res.json({ message: "User blocked successfully", updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", error });
+    }
+};
+
+
 const sendLoginDetails = async (req, res) => {
-    const { name, email, password , role } = req.body
+    const { name, email, password, role } = req.body
 
     const token = jwt.sign({ email }, 'healthcare', { expiresIn: '30d' });
 
@@ -296,4 +325,4 @@ The Health Monitor Team`,
 };
 
 
-export { addUser, editUser, deleteUser, getUser, getAllUsers, loginUser, sendLoginDetails, passwordDetails };
+export { addUser, editUser, deleteUser, getUser, getAllUsers, loginUser, sendLoginDetails, passwordDetails, blockUser };
