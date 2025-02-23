@@ -11,7 +11,7 @@ router.get('/get-user' ,  getUser);
 router.get('/get-all-users' , getAllUsers);
 router.post('/login-user' , loginUser);
 router.delete('/delete-user' , deleteUser);
-router.post('/block-user', blockUser);
+router.put('/block-user', blockUser);
 router.post('/send-details',authenticateToken , sendLoginDetails);
 router.post('/password-details' , passwordDetails);
 
