@@ -205,6 +205,8 @@ const blockUser = async (req, res) => {
     try {
         const { id } = req.headers;
 
+        console.log(`id is ${id}`);
+        
         if (!id) {
             return res.status(400).json({ message: "User ID is required in headers" });
         }
