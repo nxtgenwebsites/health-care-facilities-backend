@@ -183,7 +183,7 @@ const editData = async (req , res) => {
 
         const {
             organisation_name, facility_type, ownership, state, city, country,
-            address, email, phone, google_maps_link, is_24_hours, facility_a_e
+            address, email, phone, google_maps_link, is_24_hours, facility_a_e ,time_slots
         } = req.body;
         await reportModel.findByIdAndUpdate(id, {
             organisation_name: organisation_name,
@@ -197,7 +197,8 @@ const editData = async (req , res) => {
             phone: phone,
             google_maps_link: google_maps_link,
             is_24_hours: is_24_hours,
-            facility_a_e: facility_a_e
+            facility_a_e: facility_a_e,
+            time_slots: time_slots
         });
         return res.status(200).json({ message: "updated successfully" });
     } catch (error) {
