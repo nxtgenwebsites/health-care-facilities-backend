@@ -229,6 +229,36 @@ const blockUser = async (req, res) => {
     }
 };
 
+const unblockUser = async (req, res) => {
+    try {
+        const { id } = req.headers;
+
+        if (!id) {
+            return res.status(400).json({ message: "User ID is required in headers" });
+        }
+
+        const user = await userModel.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.role === "super admin") {
+            return res.status(403).json({ message: "Cannot modify a super admin" });
+        }
+
+        if (!user.isBlocked) {
+            return res.status(400).json({ message: "User is not blocked" });
+        }
+
+        const updatedUser = await userModel.findByIdAndUpdate(id, { isBlocked: false }, { new: true });
+
+        res.json({ message: "User unblocked successfully", updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", error });
+    }
+};
+
 
 const sendLoginDetails = async (req, res) => {
     const { name, email, password, role } = req.body
@@ -327,4 +357,4 @@ The Health Monitor Team`,
 };
 
 
-export { addUser, editUser, deleteUser, getUser, getAllUsers, loginUser, sendLoginDetails, passwordDetails, blockUser };
+export { addUser, editUser, deleteUser, getUser, getAllUsers, loginUser, sendLoginDetails, passwordDetails, blockUser, unblockUser };
