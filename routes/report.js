@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { deleteData, editData, getReport, getReports, saveData, savefileData, uploadFile } from '../controllers/reportController.js';
+import { deleteData, editData, getReport, getReports, saveData, savefileData, uploadFile , getReportByEmail} from '../controllers/reportController.js';
 
 const router = express.Router();
 
@@ -13,6 +13,7 @@ router.post('/upload', upload.single('file'), uploadFile);
 router.post('/save', saveData);
 router.post('/save-file', savefileData);
 router.get('/get-reports', getReports);
+router.post('/get-user-report', getReportByEmail);
 router.put('/edit', editData);
 router.delete('/delete', deleteData);
 router.get('/get-report', getReport);

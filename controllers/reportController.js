@@ -247,4 +247,25 @@ const getReport = async (req, res) => {
     }
 };
 
-export { saveData, getReports, editData, deleteData, getReport, uploadFile, savefileData };
+const getReportByEmail = async (req, res) => {
+    try {
+        const { email } = req.body;
+        console.log(email);
+        if (!email) {
+            return res.status(400).json({ message: "Email Not Found" });
+        }
+
+        const data = await reportModel.find({email: email});
+
+        if (!data) {
+            return res.status(404).json({ message: "data not found" });
+        }
+
+       return res.status(200).json({ message: "Success", data: data });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Something went wrong' });
+    }
+};
+
+export { saveData, getReports, editData, deleteData, getReport, uploadFile, savefileData ,getReportByEmail };

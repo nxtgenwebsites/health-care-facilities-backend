@@ -5,9 +5,9 @@ import bcrypt from 'bcrypt';
 
 const addUser = async (req, res) => {
     try {
-        const { name, last_name, email, password, role } = req.body;
+        const { name, last_name, email, password, role, country, state, city, phone } = req.body;
 
-        if (!name || !last_name || !email || !password || !role) {
+        if (!name || !last_name || !email || !password || !role || !country || !state || !city || !phone ) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
@@ -27,7 +27,11 @@ const addUser = async (req, res) => {
             last_name,
             email,
             password: hashedPassword,
-            role
+            role,
+            country,
+            state,
+            city,
+            phone
         });
 
         await newUser.save();
@@ -45,6 +49,10 @@ const addUser = async (req, res) => {
                 id: newUser._id,
                 name: newUser.name,
                 last_name: newUser.last_name,
+                country: newUser.country,
+                state: newUser.state,
+                city: newUser.city,
+                phone: newUser.phone,
                 email: newUser.email,
                 role: newUser.role
             },
