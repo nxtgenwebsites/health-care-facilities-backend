@@ -67,7 +67,7 @@ const addUser = async (req, res) => {
 const editUser = async (req, res) => {
     try {
         const { id } = req.headers;
-        const { password, name, last_name, role } = req.body;
+        const { password, name, last_name, role, country, state, city, phone } = req.body;
 
         // Prepare the fields to update
         const updateFields = {};
@@ -82,6 +82,11 @@ const editUser = async (req, res) => {
         if (name) updateFields.name = name;
         if (last_name) updateFields.last_name = last_name;
         if (role) updateFields.role = role;
+        if (country) updateFields.country = country;
+        if (state) updateFields.state = state;
+        if (city) updateFields.city = city;
+        if (phone) updateFields.phone = phone;
+
         if (Object.keys(updateFields).length === 0) {
             return res.status(400).json({ error: "At least one field (password, firstName, lastName, or role) must be provided" });
         }
