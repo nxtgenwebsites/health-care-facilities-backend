@@ -259,7 +259,7 @@ const getReportByEmail = async (req, res) => {
             return res.status(400).json({ message: "Email Not Found" });
         }
 
-        const data = await reportModel.find({ inputter: 'shahbaznawaz2586@gmail.com'});
+        const data = await reportModel.find({ inputter: email});
 
         if (!data) {
             return res.status(404).json({ message: "data not found" });
