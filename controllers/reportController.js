@@ -75,6 +75,7 @@ const savefileData = async (req, res) => {
                     is_24_hours,
                     is_A_E,
                     user,
+                    inputter,
                     time_slots,
                 } = item;
 
@@ -94,6 +95,7 @@ const savefileData = async (req, res) => {
                     is_24_hours,
                     time_slots,
                     user,
+                    inputter,  
                     facility_a_e: is_A_E
                 });
 
@@ -127,6 +129,7 @@ const saveData = async (req, res) => {
             zip_code,
             facility_a_e,
             user,
+            inputter,
             time_slots // Expecting an array of objects like [{ day: "Sunday", start_time: "10:00 AM", end_time: "6:30 PM" }]
         } = req.body;
 
@@ -150,6 +153,7 @@ const saveData = async (req, res) => {
             zip_code,
             facility_a_e,
             user,
+            inputter,
             time_slots: is_24_hours.toLowerCase() === "no" ? time_slots : [] // Save time slots only if applicable
         });
 
@@ -250,12 +254,12 @@ const getReport = async (req, res) => {
 const getReportByEmail = async (req, res) => {
     try {
         const { email } = req.body;
-        console.log(email);
+        
         if (!email) {
             return res.status(400).json({ message: "Email Not Found" });
         }
 
-        const data = await reportModel.find({email: email});
+        const data = await reportModel.find({ inputter: 'shahbaznawaz2586@gmail.com'});
 
         if (!data) {
             return res.status(404).json({ message: "data not found" });
