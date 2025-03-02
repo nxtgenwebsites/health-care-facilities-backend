@@ -27,12 +27,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/', fileRoutes);
 app.use('/api/', userRoutes);
 
-app.get('/' , (req , res) => {
-    res.send('test code')
-})
-
-
-
 app.listen(port , () => {
     console.log(`Server is up and running at http://localhost:${port}`);
 })
