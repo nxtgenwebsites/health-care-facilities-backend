@@ -294,10 +294,10 @@ const sendLoginDetails = async (req, res) => {
     const info = await transporter.sendMail({
         from: 'nxtgenwebsites@gmail.com',
         to: `${email}`,
-        subject: `Welcome to Global Care Givers App`,
+        subject: `Welcome to Global Care Givers Database`,
         text: `Dear ${name},
 
-Welcome to the Global Care Givers App!
+Welcome to the Global Care Givers Database!
 
 We are excited to have you onboard. Below are your login details to get started with your account:
 Login Link:    https://globalcaregivers.healthcentreapp.com/login.html
@@ -341,7 +341,7 @@ const passwordDetails = async (req, res) => {
         const mailOptions = {
             from: "nxtgenwebsites@gmail.com",
             to: email,
-            subject: "Your Updated Password for Global Care Givers App",
+            subject: "Your Updated Password for Global Care Givers Database",
             text: `Dear ${name},
 
 We wanted to inform you that your password has been successfully changed by the admin.
