@@ -287,17 +287,17 @@ const sendLoginDetails = async (req, res) => {
         port: 465,
         secure: true,
         auth: {
-            user: "shahbazansari8199@gmail.com",
-            pass: 'nyaj zfxg ktjr iztq'
+            user: "nxtgenwebsites@gmail.com",
+            pass: process.env.EMAIL_PASS
         },
     })
     const info = await transporter.sendMail({
-        from: 'shahbazansari8199@gmail.com',
+        from: 'nxtgenwebsites@gmail.com',
         to: `${email}`,
-        subject: `Welcome to Health Monitor System`,
+        subject: `Welcome to Global Care Givers App`,
         text: `Dear ${name},
 
-Welcome to the Health Monitor System!
+Welcome to the Global Care Givers App!
 
 We are excited to have you onboard. Below are your login details to get started with your account:
 Login Link:    https://globalcaregivers.healthcentreapp.com/login.html
@@ -333,15 +333,15 @@ const passwordDetails = async (req, res) => {
             port: 465,
             secure: true,
             auth: {
-                user: "shahbazansari8199@gmail.com", // Your email
-                pass: "nyaj zfxg ktjr iztq", // Your email app password
+                user: "nxtgenwebsites@gmail.com",
+                pass: process.env.EMAIL_PASS
             },
         });
 
         const mailOptions = {
-            from: "shahbazansari8199@gmail.com",
+            from: "nxtgenwebsites@gmail.com",
             to: email,
-            subject: "Your Updated Password for Health Monitor System",
+            subject: "Your Updated Password for Global Care Givers App",
             text: `Dear ${name},
 
 We wanted to inform you that your password has been successfully changed by the admin.
