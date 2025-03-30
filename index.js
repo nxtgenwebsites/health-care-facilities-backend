@@ -11,11 +11,11 @@ dotenv.config();
 connectDB();
 
 // CORS configuration
-// const corsOptions = {
-//     origin: 'https://health-care-facilities.vercel.app',
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     optionsSuccessStatus: 200
-// };
+const corsOptions = {
+    origin: 'https://globalcaregivers.healthcentreapp.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    optionsSuccessStatus: 200
+};
 
 const app = express();
 const port = process.env.PORT || 9000;

@@ -278,7 +278,7 @@ const sendLoginDetails = async (req, res) => {
 
     const token = jwt.sign({ email }, 'healthcare', { expiresIn: '30d' });
 
-    const loginLink = `https://health-care-facilities.vercel.app/login.html?token=${token}`;
+    const loginLink = `https://globalcaregivers.healthcentreapp.com/login.html?token=${token}`;
 
     const testAccount = await nodemailer.createTestAccount();
 
@@ -300,7 +300,7 @@ const sendLoginDetails = async (req, res) => {
 Welcome to the Health Monitor System!
 
 We are excited to have you onboard. Below are your login details to get started with your account:
-Login Link:    https://health-care-facilities.vercel.app/login.html
+Login Link:    https://globalcaregivers.healthcentreapp.com/login.html
 Email Address: ${email}
 Password:         ${password}
 Role :    ${role}
@@ -347,7 +347,7 @@ const passwordDetails = async (req, res) => {
 We wanted to inform you that your password has been successfully changed by the admin.
 
 To access your account, please use the following login details:
-Login Link:   https://health-care-facilities.vercel.app/login.html
+Login Link:   https://globalcaregivers.healthcentreapp.com/login.html
 Email Address: ${email}
 Password:         ${password}
 
