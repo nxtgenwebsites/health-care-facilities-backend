@@ -4,7 +4,7 @@ import csv from 'csv-parser';
 
 // Process Uploaded File
 const uploadFile = async (req, res) => {
-  try {
+    try {
         if (!req.file) {
             return res.status(400).json({ error: "No file uploaded" });
         }
@@ -13,7 +13,6 @@ const uploadFile = async (req, res) => {
         let data = [];
 
         if (fileType === "text/csv" || fileType === "text/plain") {
-            // For CSV or TXT files, process directly from buffer
             const stream = streamifier.createReadStream(req.file.buffer);
 
             stream
@@ -22,21 +21,24 @@ const uploadFile = async (req, res) => {
                     data.push(Object.values(row));
                 })
                 .on("end", () => {
-                    res.json({ dropdownData: data.slice(0, 5) });
+                    res.json({ dropdownData: data }); // ✅ Send full data
                 })
                 .on("error", (error) => {
                     console.error("Error reading CSV/TXT file:", error);
                     res.status(500).json({ error: "Error reading the file" });
                 });
 
-        } else if (fileType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-            // ✅ For Excel files (xlsx), process directly from buffer
+        } else if (
+            fileType ===
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ) {
             const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
             const sheetName = workbook.SheetNames[0];
-            const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+            const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {
+                header: 1,
+            });
 
-            res.json({ dropdownData: sheetData.slice(0, 5) });
-
+            res.json({ dropdownData: sheetData }); // ✅ Send full data
         } else {
             res.status(400).json({ error: "Invalid file type" });
         }
@@ -45,6 +47,7 @@ const uploadFile = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
 
 
 // Save All Data with to MongoDB
