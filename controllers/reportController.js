@@ -76,7 +76,7 @@ const savefileData = async (req, res) => {
                     phone_number,
                     google_maps_link,
                     is_24_hours,
-                    is_A_E,
+                    facility_a_e,
                     user,
                     inputter,
                     time_slots,
@@ -99,7 +99,7 @@ const savefileData = async (req, res) => {
                     time_slots,
                     user,
                     inputter,  
-                    facility_a_e: is_A_E
+                    facility_a_e: facility_a_e
                 });
 
                 // Save each entry to the database
