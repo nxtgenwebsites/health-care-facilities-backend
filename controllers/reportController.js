@@ -196,8 +196,8 @@ const getReports = async (req, res) => {
         const facilityTypes = [
             "hospital",
             "health centre",
-            "chemist",
-            "medical lab",
+            "chemists",
+            "medical labs",
             "pharmacy",
             "drug store",
             "maternity centre"
