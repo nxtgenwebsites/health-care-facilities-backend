@@ -52,67 +52,80 @@ const uploadFile = async (req, res) => {
 
 // Save All Data with to MongoDB
 const savefileData = async (req, res) => {
-        try {
-            // Assuming data comes as an array from the frontend (req.body)
-            const data = req.body;  // Accessing the data sent in the request body
+    try {
+        const data = req.body;
 
-            // Check if the data is an array
-            if (!Array.isArray(data)) {
-                return res.status(400).json({ success: false, message: 'Invalid data format. Expected an array.' });
-            }
-
-            // Map through each entry in the data array and save it to the database
-            for (const item of data) {
-                const {
-                    organisation_name,
-                    facility_type,
-                    ownership,
-                    state,
-                    city,
-                    country,
-                    address,
-                    zip_code,
-                    email_address,
-                    phone_number,
-                    google_maps_link,
-                    is_24_hours,
-                    facility_a_e,
-                    user,
-                    inputter,
-                    time_slots,
-                } = item;
-
-                
-                const newData = new reportModel({
-                    organisation_name,
-                    facility_type,
-                    ownership,
-                    state,
-                    city,
-                    country,
-                    address,
-                    zip_code,
-                    email: email_address,
-                    phone: phone_number,
-                    google_maps_link,
-                    is_24_hours,
-                    time_slots,
-                    user,
-                    inputter,  
-                    facility_a_e: facility_a_e
-                });
-
-                // Save each entry to the database
-                await newData.save();
-            }
-
-            // Send success response after saving all data
-            res.status(200).json({ success: true, message: "Data saved successfully" });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Server Error", message: error.message });
+        if (!Array.isArray(data)) {
+            return res.status(400).json({ success: false, message: 'Invalid data format. Expected an array.' });
         }
+
+        for (const item of data) {
+            const {
+                organisation_name,
+                facility_type,
+                ownership,
+                state,
+                city,
+                country,
+                address,
+                zip_code,
+                email_address,
+                phone_number,
+                google_maps_link,
+                is_24_hours,
+                facility_a_e,
+                user,
+                inputter,
+                time_slots,
+            } = item;
+
+            // Skip the item if required fields are missing or null/undefined
+            if (
+                !organisation_name ||
+                !facility_type ||
+                !ownership ||
+                !email_address ||
+                !phone_number ||
+                !country ||
+                !city ||
+                !address ||
+                !google_maps_link ||
+                is_24_hours == null ||  // Check explicitly because false is a valid value
+                !zip_code ||
+                !facility_a_e
+            ) {
+                continue;  // Skip this item and move to the next one
+            }
+
+            const newData = new reportModel({
+                organisation_name,
+                facility_type,
+                ownership,
+                state,
+                city,
+                country,
+                address,
+                zip_code,
+                email: email_address,
+                phone: phone_number,
+                google_maps_link,
+                is_24_hours,
+                time_slots,
+                user,
+                inputter,
+                facility_a_e,
+            });
+
+            await newData.save();
+        }
+
+        res.status(200).json({ success: true, message: "Data saved successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server Error", message: error.message });
+    }
 };
+
 
 // Save Data to MongoDB
 const saveData = async (req, res) => {
@@ -169,16 +182,48 @@ const saveData = async (req, res) => {
     }
 };
 
-// Get Reports From MongoDB
 const getReports = async (req, res) => {
     try {
-        const reports = await reportModel.find({});
-        res.status(200).json({ message: "Success", data: reports });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        // Main paginated data
+        const reports = await reportModel.find({}).skip(skip).limit(limit);
+        const total = await reportModel.countDocuments();
+
+        // Facility type counts
+        const facilityTypes = [
+            "hospital",
+            "health centre",
+            "chemists",
+            "medical labs",
+            "pharmacy",
+            "drug store",
+            "maternity centre"
+        ];
+
+        const facilityCounts = {};
+        for (const type of facilityTypes) {
+            facilityCounts[type] = await reportModel.countDocuments({
+                facility_type: { $regex: new RegExp(`^${type}$`, 'i') }
+            });
+        }
+
+        res.status(200).json({
+            message: "Success",
+            data: reports,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit),
+            totalReports: total,
+            facilityCounts: facilityCounts
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
 
 const editData = async (req , res) => {
     try {
