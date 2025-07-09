@@ -302,22 +302,34 @@ const getReport = async (req, res) => {
 const getReportByEmail = async (req, res) => {
     try {
         const { email } = req.body;
-        
+
         if (!email) {
             return res.status(400).json({ message: "Email Not Found" });
         }
 
-        const data = await reportModel.find({ inputter: email});
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
 
-        if (!data) {
-            return res.status(404).json({ message: "data not found" });
-        }
+        // Paginated reports by email
+        const data = await reportModel.find({ inputter: email })
+            .skip(skip)
+            .limit(limit);
 
-       return res.status(200).json({ message: "Success", data: data });
+        const total = await reportModel.countDocuments({ inputter: email });
+
+        return res.status(200).json({
+            message: "Success",
+            data: data,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit),
+            totalReports: total
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
+
 
 export { saveData, getReports, editData, deleteData, getReport, uploadFile, savefileData ,getReportByEmail };
