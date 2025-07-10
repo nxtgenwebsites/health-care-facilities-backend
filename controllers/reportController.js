@@ -318,12 +318,32 @@ const getReportByEmail = async (req, res) => {
 
         const total = await reportModel.countDocuments({ inputter: email });
 
+        // Facility type counts for this user
+        const facilityTypes = [
+            "hospital",
+            "health centre",
+            "chemists",
+            "medical labs",
+            "pharmacy",
+            "drug store",
+            "maternity centre"
+        ];
+
+        const facilityCounts = {};
+        for (const type of facilityTypes) {
+            facilityCounts[type] = await reportModel.countDocuments({
+                inputter: email,
+                facility_type: { $regex: new RegExp(`^${type}$`, 'i') }
+            });
+        }
+
         return res.status(200).json({
             message: "Success",
             data: data,
             currentPage: page,
             totalPages: Math.ceil(total / limit),
-            totalReports: total
+            totalReports: total,
+            facilityCounts: facilityCounts
         });
     } catch (error) {
         console.error(error);
