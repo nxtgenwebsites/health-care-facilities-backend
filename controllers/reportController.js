@@ -50,14 +50,19 @@ const uploadFile = async (req, res) => {
 
 
 
-// Save All Data with to MongoDB
 const savefileData = async (req, res) => {
     try {
         const data = req.body;
 
         if (!Array.isArray(data)) {
-            return res.status(400).json({ success: false, message: 'Invalid data format. Expected an array.' });
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid data format. Expected an array.',
+            });
         }
+
+        let savedCount = 0;
+        let skippedCount = 0;
 
         for (const item of data) {
             const {
@@ -79,22 +84,11 @@ const savefileData = async (req, res) => {
                 time_slots,
             } = item;
 
-            // Skip the item if required fields are missing or null/undefined
-            if (
-                !organisation_name ||
-                !facility_type ||
-                !ownership ||
-                !email_address ||
-                !phone_number ||
-                !country ||
-                !city ||
-                !address ||
-                !google_maps_link ||
-                is_24_hours == null ||  // Check explicitly because false is a valid value
-                !zip_code ||
-                !facility_a_e
-            ) {
-                continue;  // Skip this item and move to the next one
+            // ✅ Only these 3 are required now
+            if (!organisation_name || !facility_type || !ownership) {
+                skippedCount++;
+                console.log("❌ Skipped item due to missing required fields:", item);
+                continue;
             }
 
             const newData = new reportModel({
@@ -117,14 +111,25 @@ const savefileData = async (req, res) => {
             });
 
             await newData.save();
+            savedCount++;
+            console.log("✅ Saved item:", organisation_name);
         }
 
-        res.status(200).json({ success: true, message: "Data saved successfully" });
+        res.status(200).json({
+            success: true,
+            message: `${savedCount} records saved successfully. ${skippedCount} records were skipped.`,
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Server Error", message: error.message });
+        console.error("❌ Server Error:", error);
+        res.status(500).json({
+            success: false,
+            error: "Server Error",
+            message: error.message,
+        });
     }
 };
+
+
 
 
 // Save Data to MongoDB
