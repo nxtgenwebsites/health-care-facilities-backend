@@ -84,10 +84,8 @@ const savefileData = async (req, res) => {
                 time_slots,
             } = item;
 
-            // ✅ Only these 3 are required now
-            if (!organisation_name || !facility_type || !ownership) {
+            if (!organisation_name || !facility_type || !ownership || !city || !address) {
                 skippedCount++;
-                console.log("❌ Skipped item due to missing required fields:", item);
                 continue;
             }
 
@@ -112,7 +110,6 @@ const savefileData = async (req, res) => {
 
             await newData.save();
             savedCount++;
-            console.log("✅ Saved item:", organisation_name);
         }
 
         res.status(200).json({
