@@ -227,7 +227,7 @@ const getReports = async (req, res) => {
 };
 
 
-const editData = async (req , res) => {
+const editData = async (req, res) => {
     try {
         const { id } = req.headers;
 
@@ -237,7 +237,7 @@ const editData = async (req , res) => {
 
         const {
             organisation_name, facility_type, ownership, state, city, country,
-            address, email, phone, google_maps_link, is_24_hours, facility_a_e ,time_slots
+            address, email, phone, google_maps_link, is_24_hours, facility_a_e, time_slots
         } = req.body;
         await reportModel.findByIdAndUpdate(id, {
             organisation_name: organisation_name,
@@ -258,7 +258,7 @@ const editData = async (req , res) => {
     } catch (error) {
         console.log(error);
     }
-} 
+}
 
 const deleteData = async (req, res) => {
     try {
@@ -294,7 +294,7 @@ const getReport = async (req, res) => {
             return res.status(404).json({ message: "data not found" });
         }
 
-       return res.status(200).json({ message: "Success", data: data });
+        return res.status(200).json({ message: "Success", data: data });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Something went wrong' });
@@ -354,4 +354,105 @@ const getReportByEmail = async (req, res) => {
 };
 
 
-export { saveData, getReports, editData, deleteData, getReport, uploadFile, savefileData ,getReportByEmail };
+
+const filterDate = async (req , res) => {
+    try {
+        const reports = await reportModel.find({}, 'user inputter country');
+
+        const authorsMap = new Map(); // To store unique { user: inputter }
+
+        const countriesSet = new Set();
+
+        reports.forEach(report => {
+            if (report.user && report.inputter) {
+                const key = `${report.user}-${report.inputter}`;
+                if (!authorsMap.has(key)) {
+                    authorsMap.set(key, {
+                        name: report.user,
+                        email: report.inputter
+                    });
+                }
+            }
+
+            if (report.country) {
+                countriesSet.add(report.country);
+            }
+        });
+
+        const authors = Array.from(authorsMap.values());
+        const countries = Array.from(countriesSet);
+
+        res.json({ authors, countries });
+    } catch (error) {
+        console.error('Error fetching summary:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const countryDateFillter =async (req, res) => {
+    try {
+        const { country } = req.body;
+
+        if (!country) {
+            return res.status(400).json({ error: 'Country is required in request body' });
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const totalReports = await reportModel.countDocuments({ country });
+
+        const reports = await reportModel.find({ country })
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 }); // Optional: latest first
+
+        const totalPages = Math.ceil(totalReports / limit);
+
+        res.json({
+            currentPage: page,
+            totalPages,
+            totalReports,
+            reports,
+        });
+    } catch (error) {
+        console.error('Error fetching reports by country:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+const userDateFillter = async (req, res) => {
+    try {
+        const { inputter } = req.body;
+
+        if (!inputter) {
+            return res.status(400).json({ error: 'Inputter email is required in request body' });
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const totalReports = await reportModel.countDocuments({ inputter });
+
+        const reports = await reportModel.find({ inputter })
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 }); // Optional: latest first
+
+        const totalPages = Math.ceil(totalReports / limit);
+
+        res.json({
+            currentPage: page,
+            totalPages,
+            totalReports,
+            reports,
+        });
+    } catch (error) {
+        console.error('Error fetching reports by inputter:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export { saveData, getReports, editData, deleteData, filterDate, userDateFillter, countryDateFillter, getReport, uploadFile, savefileData, getReportByEmail };

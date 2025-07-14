@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import connectDB from './config/db.js';
 import fileRoutes from './routes/report.js'
 import userRoutes from './routes/userRoutes.js';
+import reportModel from './models/reportSchama.js';
 
 
 dotenv.config();
