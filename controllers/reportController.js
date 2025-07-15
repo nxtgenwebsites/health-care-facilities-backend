@@ -1,6 +1,7 @@
 import reportModel from '../models/reportSchama.js';
 import xlsx from 'xlsx';
 import csv from 'csv-parser';
+import userModel from '../models/userSchama.js';
 
 // Process Uploaded File
 const uploadFile = async (req, res) => {
@@ -355,39 +356,36 @@ const getReportByEmail = async (req, res) => {
 
 
 
-const filterDate = async (req , res) => {
+const filterData = async (req, res) => {
     try {
-        const reports = await reportModel.find({}, 'user inputter country');
+        // Get all users
+        const users = await userModel.find({}, 'name email');
 
-        const authorsMap = new Map(); // To store unique { user: inputter }
+        // Format as { name, email }
+        const authors = users.map(user => ({
+            name: user.name,
+            email: user.email
+        }));
+
+        // If you still want to get all countries from reportModel
+        const reports = await reportModel.find({}, 'country');
 
         const countriesSet = new Set();
-
         reports.forEach(report => {
-            if (report.user && report.inputter) {
-                const key = `${report.user}-${report.inputter}`;
-                if (!authorsMap.has(key)) {
-                    authorsMap.set(key, {
-                        name: report.user,
-                        email: report.inputter
-                    });
-                }
-            }
-
             if (report.country) {
                 countriesSet.add(report.country);
             }
         });
 
-        const authors = Array.from(authorsMap.values());
         const countries = Array.from(countriesSet);
 
         res.json({ authors, countries });
     } catch (error) {
-        console.error('Error fetching summary:', error);
+        console.error('Error fetching data:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
+
 
 const countryDateFillter =async (req, res) => {
     try {
@@ -455,4 +453,4 @@ const userDateFillter = async (req, res) => {
     }
 };
 
-export { saveData, getReports, editData, deleteData, filterDate, userDateFillter, countryDateFillter, getReport, uploadFile, savefileData, getReportByEmail };
+export { saveData, getReports, editData, deleteData, filterData, userDateFillter, countryDateFillter, getReport, uploadFile, savefileData, getReportByEmail };
